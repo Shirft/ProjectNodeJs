@@ -6,6 +6,7 @@ const port=8080
 
 app.use(express.urlencoded({ extended: true }))
 
+//all products and query
 app.get('/products', async(req, res)=>{
 
     let limit = req.query.limit;
@@ -30,17 +31,22 @@ app.get('/products', async(req, res)=>{
 
 });
 
+//params id
 app.get('/products/:pid', async (req, res)=>{
+
     const id=parseInt(req.params.pid)
     const productsId= await pm.getProductById(id);
 
     if(isNaN(Number(id))){
         return res.status(400).send({status: 'error', message:'Product not found'})
     }
+
     if(productsId.status=='error'){
         return res.status(400).send(productsId);
     }
+
     return res.status(200).send(productsId);
+
 });
 
-app.listen(port, ()=> console.log('port 8080 listening.'));
+app.listen(port, ()=> console.log(`Port ${port} listening.`));
