@@ -8,8 +8,25 @@ app.use(express.urlencoded({ extended: true }))
 
 app.get('/products', async(req, res)=>{
 
+    let limit = req.query.limit;
+
     const products= await pm.getProducts();
-    res.status(200).send({products})
+
+    if(!limit){
+        return res.status(200).send({products})
+    }
+
+    if(isNaN(Number(limit))){
+        return res.status(400).send({status: 'error', message:'Limit not found'});
+    }
+
+    if(products.length>limit){
+        const productsLimit=products.slice(0, limit);
+        return res.status(200).send({productsLimit});
+    }
+
+    return res.status(200).send({products})
+
 
 });
 
@@ -23,7 +40,7 @@ app.get('/products/:pid', async (req, res)=>{
     if(productsId.status=='error'){
         return res.status(400).send(productsId);
     }
-    res.status(200).send(productsId);
+    return res.status(200).send(productsId);
 });
 
 app.listen(port, ()=> console.log('port 8080 listening.'));
