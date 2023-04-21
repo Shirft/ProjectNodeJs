@@ -1,10 +1,11 @@
-const ProductManager=require('./ProductManager');
+/*const ProductManager=require('./ProductManager');
 const express=require('express');
 const app=express();
 const pm= new ProductManager();
 const port=8080
 
-app.use(express.urlencoded({ extended: true }))
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
 //all products and query
 app.get('/products', async(req, res)=>{
@@ -50,3 +51,17 @@ app.get('/products/:pid', async (req, res)=>{
 });
 
 app.listen(port, ()=> console.log(`Port ${port} listening.`));
+*/
+const express=require('express');
+const products=require('./Routers/products');
+const carts=require('./Routers/carts');
+const app=express();
+const port=8080;
+
+app.use(express.json());
+app.use(express.urlencoded({extended: true}));
+
+app.use('/api/products', products)
+app.use('/api/carts', carts);
+
+app.listen(port, ()=> console.log(`Port listening ${port}`));

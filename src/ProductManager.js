@@ -11,7 +11,16 @@ class ProductManager {
     }
   }
 
-  addProduct = async (title, description, price, thumbnail, code, stock) => {
+  addProduct = async (
+    title,
+    description,
+    price,
+    thumbnail,
+    code,
+    status,
+    category,
+    stock
+  ) => {
     const id = this.products.length + 1;
 
     const product = {
@@ -21,23 +30,40 @@ class ProductManager {
       price,
       thumbnail,
       code,
+      status,
+      category,
       stock,
     };
-    for (const p in product) {
+    /*for (const p in product) {
       if (product[p] == 0) {
         return console.log("No pueden haber campos vacios");
       }
-    }
+    }*/
     const validation = this.products.find((e) => e.code == product.code);
     if (validation) {
-      return console.log(
-        `Error, codigo de producto ingresado repetido: ${product.code}`
-      );
-    } else {
+      return {
+        status: "error",
+        message: "El producto no se pudo agregar porque el codigo es repetido",
+      };
+    }
+
+    if (Object.values(product).every((e) => e)) {
+      product.status === "false"
+        ? (product.status = false)
+        : (product.status = true);
+
+      product.price = Number(product.price);
+      product.stock = Number(product.stock);
+      product.thumbnail = [product.thumbnail];
       this.products.push(product);
       await fs.promises.writeFile(this.path, JSON.stringify(this.products));
-      console.log(`Producto ingresado correctamente, codigo: ${product.code}`);
+      return {
+        status: "succes",
+        message: "El producto se registro",
+        producto: product,
+      };
     }
+    return { status: "error", message: "Todos los campos son obligatorios" };
   };
 
   getProductById = async (idProduct) => {
@@ -52,29 +78,33 @@ class ProductManager {
         );*/
         return search;
       }
-      return {status:'error', message: 'Product not found'};
+      return { status: "error", message: "Product not found" };
     } catch (error) {
       console.log(error);
     }
   };
 
   deleteProducts = async (idD) => {
+    const readProducts = await fs.promises.readFile(this.path, "utf-8");
+    const products = JSON.parse(readProducts);
+    const productId = products.findIndex((e) => e.id == idD);
+    if (productId === -1)
+      return {
+        status: "error",
+        message: `Producto con id: ${idD} no encontrado`,
+      };
 
-      const readProducts = await fs.promises.readFile(this.path, "utf-8");
-      const products = JSON.parse(readProducts);
-      if(products.find(e=>e.id==idD)){
-        const product = products.filter((idP) => idP.id !== idD);
-        this.products = product;
-        await fs.promises.writeFile(this.path, JSON.stringify(this.products));
-    
-        console.log(`Producto id ${idD} eliminado`);
-      }else{
-        console.log(`Error, id ${idD} no encontrado`);
-      }
-      
+      const product = products.filter((idP) => idP.id !== idD);
 
+      this.products = product;
+  
+      await fs.promises.writeFile(this.path, JSON.stringify(this.products));
+  
+      return {
+        status: "sucess",
+        message: `Se elimino el producto de id: ${idD}`,
+      };
 
-   
   };
 
   updateProduct = async (id, body) => {
@@ -85,6 +115,7 @@ class ProductManager {
     productsUpParse[id - 1] = update;
     this.products = productsUpParse;
     await fs.promises.writeFile(this.path, JSON.stringify(this.products));
+    return update;
   };
 
   getProducts = async () => {
@@ -98,7 +129,7 @@ class ProductManager {
   };
 }
 
-module.exports=ProductManager;
+module.exports = ProductManager;
 
 //const productManager = new ProductManager();
 
@@ -197,8 +228,6 @@ productManager.addProduct(
   25
 );
 */
-
-
 
 //llamada getProduct con producto recien agregado
 //productManager.getProducts();
