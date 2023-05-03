@@ -20,12 +20,12 @@ class CartManager {
         };
         
         if (Object.values(cart).every(value => value)) {
-            cart.products = [cart.products];
+            cart.products = [];
             this.carts.push(cart);
             await fs.promises.writeFile(this.path, JSON.stringify(this.carts))
-         }
+            return {cart:cart}
+        }
 
-         return [];
     };
 
     getCartById = async (id) => {
@@ -46,7 +46,7 @@ class CartManager {
         try {
             const getFileCarts = await fs.promises.readFile(this.path, 'utf-8')
             const parseCarts = JSON.parse(getFileCarts);
-            
+
             if (isNaN(Number(pid))) return { status: "error", message: 'No es un id válido' };
 
             const findId = parseCarts.findIndex(product => product.id == pid)

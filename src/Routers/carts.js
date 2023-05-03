@@ -16,29 +16,32 @@ routerCar.get("/:cid", async (req, res) => {
 
 routerCar.post("/", async (req, res) => {
   const cart = req.body;
-  const campoVacio = Object.values(cart).find((value) => value === "");
-  if (campoVacio) {
-    return res
-      .status(400)
-      .send({ status: "error", message: "Falta completar algún campo" });
-  }
 
-  if (cart.status === "error") return res.status(400).send({ valueReturned });
   await carts.addCart(cart);
-  res.status(200).send({ cart });
+  res.status(200).send({ status:'suscess', message:'carrito generado correctamente', cart });
+  
 });
 
 //No esta del todo funcional
 routerCar.post("/:cid/product/:pid", async (req, res) => {
   let producto = req.body;
   const { cid, pid } = req.params;
+  //const carrito=await carts.getCartById(cid);
   const{
+    product,
+    quantity,
+  } = producto;
+
+  producto.product=pid;
+  
+
+ /* const{
     product,
     quantity,
   }=producto;
 
-  producto.product == pid;
-
+  producto['product'] == pid;
+*/
   const carrito = await carts.getCartById(cid);
   if (carrito.error) return res.status(400).send({ carrito });
 
@@ -65,6 +68,7 @@ routerCar.post("/:cid/product/:pid", async (req, res) => {
       message: "producto agregado",
       carrito: carrito.products,
     });
+
 });
 
 module.exports=routerCar;
