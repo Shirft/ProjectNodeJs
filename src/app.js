@@ -59,6 +59,7 @@ const carts=require('./Routers/carts');
 const handlebars=require('express-handlebars');
 const Server=require('socket.io');
 const app=express();
+//const {__dirname}=require('../src/utils');
 const port=8080;
 
 const pm= new ProductManager();
@@ -73,11 +74,10 @@ app.use('/realTimeProducts', (req, res) => {
 })
 
 app.engine('handlebars', handlebars.engine())
-app.set('views', '/views')
+app.set('views', __dirname+'/views')
 app.set('view engine', 'handlebars') 
 
 
-//app.listen(port, ()=> console.log(`Port listening ${port}`));
 const httpServer = app.listen(port, () => {
     try {
         console.log(`Listening to the port ${port}`);
