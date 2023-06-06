@@ -26,7 +26,6 @@ routerCar.post("/", async (req, res) => {
 routerCar.post("/:cid/product/:pid", async (req, res) => {
   let producto = req.body;
   const { cid, pid } = req.params;
-  //const carrito=await carts.getCartById(cid);
   const{
     product,
     quantity,
@@ -34,14 +33,6 @@ routerCar.post("/:cid/product/:pid", async (req, res) => {
 
   producto.product=pid;
   
-
- /* const{
-    product,
-    quantity,
-  }=producto;
-
-  producto['product'] == pid;
-*/
   const carrito = await carts.getCartById(cid);
   if (carrito.error) return res.status(400).send({ carrito });
 

@@ -34,11 +34,7 @@ class ProductManager {
       category,
       stock,
     };
-    /*for (const p in product) {
-      if (product[p] == 0) {
-        return console.log("No pueden haber campos vacios");
-      }
-    }*/
+
     const validation = this.products.find((e) => e.code == product.code);
     if (validation) {
       return {
@@ -71,11 +67,8 @@ class ProductManager {
       const readProducts = await fs.promises.readFile(this.path, "utf-8");
       const products = JSON.parse(readProducts);
       const search = products.find((e) => e.id == idProduct);
-      //console.log(`Producto id ${idProduct} buscado...`);
       if (search) {
-        /*console.log(
-          `Producto id ${idProduct} encontrado: \n ${JSON.stringify(search)}`
-        );*/
+
         return search;
       }
       return { status: "error", message: "Product not found" };
@@ -130,113 +123,3 @@ class ProductManager {
 }
 
 module.exports = ProductManager;
-
-//const productManager = new ProductManager();
-
-//llamada getProducts vacio
-//productManager.getProducts();
-
-//llamada addProduct
-/*
-productManager.addProduct(
-  "producto prueba",
-  "Este es un producto prueba",
-  200,
-  "Sin imagen",
-  "abc1",
-  25
-);
-
-productManager.addProduct(
-  "producto prueba",
-  "Este es un producto prueba",
-  200,
-  "Sin imagen",
-  "abc12",
-  25
-);
-
-productManager.addProduct(
-  "producto prueba",
-  "Este es un producto prueba",
-  200,
-  "Sin imagen",
-  "abc123",
-  25
-);
-
-productManager.addProduct(
-  "producto prueba",
-  "Este es un producto prueba",
-  200,
-  "Sin imagen",
-  "abc1234",
-  25
-);
-
-productManager.addProduct(
-  "producto prueba",
-  "Este es un producto prueba",
-  200,
-  "Sin imagen",
-  "abc12345",
-  25
-);
-
-productManager.addProduct(
-  "producto prueba",
-  "Este es un producto prueba",
-  200,
-  "Sin imagen",
-  "abc123456",
-  25
-);
-
-productManager.addProduct(
-  "producto prueba",
-  "Este es un producto prueba",
-  200,
-  "Sin imagen",
-  "abc123467",
-  25
-);
-
-productManager.addProduct(
-  "producto prueba",
-  "Este es un producto prueba",
-  200,
-  "Sin imagen",
-  "abc12345678",
-  25
-);
-
-productManager.addProduct(
-  "producto prueba",
-  "Este es un producto prueba",
-  200,
-  "Sin imagen",
-  "abc123456789",
-  25
-);
-
-productManager.addProduct(
-  "producto prueba",
-  "Este es un producto prueba",
-  200,
-  "Sin imagen",
-  "abc1234567890",
-  25
-);
-*/
-
-//llamada getProduct con producto recien agregado
-//productManager.getProducts();
-
-//llamada getProductById para busqueda de producto
-//productManager.getProductById(1);
-
-//llamada updateProduct para actualizar producto
-//productManager.updateProduct(1, {title:"nuevo titulo", price:500});
-
-//llamada deleteProducts
-//productManager.deleteProducts(1);
