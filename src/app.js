@@ -59,7 +59,7 @@ const carts=require('./Routers/carts');
 const handlebars=require('express-handlebars');
 const Server=require('socket.io');
 const app=express();
-//const {__dirname}=require('../src/utils');
+
 const port=8080;
 
 const pm= new ProductManager();
