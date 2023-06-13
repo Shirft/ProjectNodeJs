@@ -1,68 +1,49 @@
-const ProductManager=require('../src/ProductManager');
-const express=require('express');
-const products=require('./Routers/products');
-const carts=require('./Routers/carts');
-const handlebars=require('express-handlebars');
-const Server=require('socket.io');
-const app=express();
+import express from 'express';
+import handlebars from 'express-handlebars';
+import { Server } from 'socket.io';
+import socketProducts from './listeners/socketProducts.js';
+import registerChatHandler from './listeners/chatHandlers.js';
 
-const port=8080;
+import routerP from './Routers/products.router.js';
+import routerC from './Routers/carts.router.js';
+import routerV from './Routers/views.router.js';
 
-const pm= new ProductManager();
+import __dirname from './utils.js';
+import connectToDB from './config/configServer.js';
 
+const app = express();
+const PORT = process.env.PORT || 8080
+
+app.use(express.static(`${__dirname}/public`));
 app.use(express.json());
-app.use(express.urlencoded({extended: true}));
+app.use(express.urlencoded({ extended: true }));
 
-app.use('/api/products', products)
-app.use('/api/carts', carts);
-app.use('/realTimeProducts', (req, res) => {
-    res.render('realTimeProducts', {})
-})
-
-app.engine('handlebars', handlebars.engine())
-app.set('views', __dirname+'/views')
-app.set('view engine', 'handlebars') 
+app.engine('handlebars', handlebars.engine());
+app.set('views', `${__dirname}/views`);
+app.set('view engine', 'handlebars');
 
 
-const httpServer = app.listen(port, () => {
+app.use('/api/products', routerP)
+app.use('/api/carts', routerC)
+app.use('/', routerV);
+
+connectToDB()
+
+const httpServer = app.listen(PORT, () => {
     try {
-        console.log(`Listening to the port ${port}`);
-        console.log("http://localhost:8080/")
-        console.log("http://localhost:8080/realtimeproducts");
+        console.log(`Listening to the port ${PORT}\nAcceder a:`);
+        console.log(`\t1). http://localhost:${PORT}/products`)
+        console.log(`\t2). http://localhost:${PORT}/carts/646df484d31949d4081c72eb`);
     }
     catch (err) {
         console.log(err);
     }
 });
 
-const socketServer = Server(httpServer)
+const io = new Server(httpServer)
 
-socketServer.on('connection', async socket => {
-    console.log('Client connection');
-    const data =  await pm.getProducts()
+socketProducts(io)
 
-    socket.emit('products', {data, style: 'index.css'})
-
-    socket.on('product', async data => {
-        
-        try{
-            const {
-            title,
-            description,
-            price,
-            status,
-            category,
-            thumbnail,
-            code,
-            stock
-        } = data
-
-        const valueReturned = await pm.addProduct(title, description, price, status,category, thumbnail, code, stock)
-        console.log(valueReturned)
-        }
-        catch (err){
-            console.log(err);
-        }
-
-})
+io.on('connection',socket=>{
+    registerChatHandler(io,socket);
 })
